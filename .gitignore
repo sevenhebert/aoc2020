@@ -7,3 +7,8 @@ project/plugins/project/
 .history
 .cache
 .lib/
+.idea
+*.iws
+*.iml
+*.ipr
+/out/
