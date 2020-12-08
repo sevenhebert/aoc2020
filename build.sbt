@@ -2,4 +2,4 @@ name := "aco2020"
 
 version := "0.1"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.13.1"
