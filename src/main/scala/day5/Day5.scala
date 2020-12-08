@@ -1,18 +1,24 @@
 package day5
 
-import scala.io.Source
+import scala.util.{Failure, Success, Try}
 
 object Day5 {
 
-  val input = Source.fromResource("day5/input.txt").getLines.toArray
+  val filename = "day5/input.txt"
+
+  val input = Try(io.Source.fromResource(filename).getLines.toArray) match {
+    case Failure(err) => throw new Exception(err.getMessage)
+    case Success(res) => res
+  }
 
   val lowerHalf = "([FL])".r
   val upperHalf = "([BR])".r
 
-  val boardingPasses = input.map(i => Integer.parseInt(i.map({
-    case lowerHalf(_) => '0'
-    case upperHalf(_) => '1'
-  }), 2))
+  val boardingPasses = input.map(i =>
+    Integer.parseInt(i.map({
+      case lowerHalf(_) => '0'
+      case upperHalf(_) => '1'
+    }), 2))
 
   val highestPass = boardingPasses.max
 
@@ -24,4 +30,3 @@ object Day5 {
 
   val missingPass = findMissingPass(0, 1)
 }
-

@@ -6,20 +6,17 @@ object Day7 {
 
   val filename = "day7/input.txt"
 
-  val input = Try(io.Source.fromResource(filename).getLines.toList) match {
-    case Failure(error) => throw new Exception(error.getMessage)
-    case Success(value) => value
-  }
-  def parse(input: List[String]) = input.map(line => {
-    val pattern = "(\\sbag+?)(\\b|s\\b)(\\.|)"
+  val pattern = "(\\sbag+?)(\\b|s\\b)(\\.|)"
+  val input = Try(io.Source.fromResource(filename).getLines.toList.map(line => {
     val raw = line.replaceAll(pattern, "")
     val (key, values) = raw.splitAt(raw.indexOf("contain"))
     (key.trim, values.replaceAll("contain ", ""))
-  })
+  })) match {
+    case Failure(error) => throw new Exception(error.getMessage)
+    case Success(res) => res
+  }
 
-  val n = parse(input)
-
-  val lookupContainingBags = n.foldRight[Map[String, Set[String]]](Map.empty)((cur, acc) => {
+  val lookupContainingBags = input.foldRight[Map[String, Set[String]]](Map.empty)((cur, acc) => {
     val (value, rawKeys) = cur
     val update = rawKeys.split(", ").map(k => (k.filterNot(_.isDigit).trim, value))
     update.foldRight[Map[String, Set[String]]](acc)((c, updatedMap) => {
@@ -41,7 +38,7 @@ object Day7 {
 
   val res1 = countOuterBags(Set.empty, Set("shiny gold"))
 
-  val inputMap: Map[String, Array[String]] = n.map(el => (el._1, el._2.split(", "))).toMap
+  val inputMap: Map[String, Array[String]] = input.map(el => (el._1, el._2.split(", "))).toMap
   def countInnerBags(key: String): Long = inputMap.get(key) match {
     case Some(bagsContained) => 1 + bagsContained.map(bag =>
       if (bag == "no other") 0
