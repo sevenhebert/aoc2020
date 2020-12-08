@@ -18,7 +18,6 @@ object Day7 {
   })
 
   val n = parse(input)
-  val m = n.map(el => (el._1, el._2.split(", "))).toMap
 
   val lookupContainingBags = n.foldRight[Map[String, Set[String]]](Map.empty)((cur, acc) => {
     val (value, rawKeys) = cur
@@ -32,26 +31,27 @@ object Day7 {
     })
   })
 
-  def solve(seen: Set[String], keys: Set[String]): Int =
+  def countOuterBags(seen: Set[String], keys: Set[String]): Int =
     if (keys.isEmpty) seen.size
     else {
       val cur = keys.flatMap(k => lookupContainingBags.get(k)).flatten
       val update = seen ++ cur
-      solve(update, update.diff(seen))
+      countOuterBags(update, update.diff(seen))
     }
 
-  val res1 = solve(Set.empty, Set("shiny gold"))
+  val res1 = countOuterBags(Set.empty, Set("shiny gold"))
 
-  def countBags(key: String): Long = m.get(key) match {
+  val inputMap: Map[String, Array[String]] = n.map(el => (el._1, el._2.split(", "))).toMap
+  def countInnerBags(key: String): Long = inputMap.get(key) match {
     case Some(bagsContained) => 1 + bagsContained.map(bag =>
       if (bag == "no other") 0
       else {
         val (multiplier, containedBag) = bag.splitAt(2)
-        multiplier.trim.toLong * countBags(containedBag)
+        multiplier.trim.toLong * countInnerBags(containedBag)
       }).sum
     case None => 0
   }
 
-  val res2 = countBags("shiny gold") - 1
+  val res2 = countInnerBags("shiny gold") - 1
 
 }
