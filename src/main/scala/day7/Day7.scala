@@ -12,7 +12,7 @@ object Day7 {
     val (key, values) = raw.splitAt(raw.indexOf("contain"))
     (key.trim, values.replaceAll("contain ", ""))
   })) match {
-    case Failure(error) => throw new Exception(error.getMessage)
+    case Failure(err) => throw new Exception(err.getMessage)
     case Success(res) => res
   }
 
