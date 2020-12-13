@@ -62,7 +62,7 @@ object Day11 {
     })
 
   lazy val res1 = List
-    .from(1 to 100)
+    .from(1 to 150)
     .foldLeft[Array[Array[Char]]](input)((acc, _) => nextState(3, onlyAdjacent = true, acc))
     .flatten
     .count(_ == occupied) // 2438
@@ -73,8 +73,10 @@ object Day11 {
     .flatten
     .count(_ == occupied) // 2174
 
-  List.from(1 to 100).foldLeft[Array[Array[Char]]](input)((acc, _) => {
+  List.from(1 to 150).foldLeft[Array[Array[Char]]](input)((acc, _) => {
+    acc.foreach(a => println(a.mkString))
     println(acc.flatten.count(_ == occupied))
-    nextState(???, ???, acc)
+    println
+    nextState(3, true, acc)
   }).flatten.count(_ == occupied)
 }
