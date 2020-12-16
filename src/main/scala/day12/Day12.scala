@@ -1,7 +1,5 @@
 package day12
 
-import javafx.scene.effect.Light.Distant
-
 import scala.util.{Failure, Success, Try}
 
 object Day12 {
