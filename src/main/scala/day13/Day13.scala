@@ -1,57 +1,40 @@
 package day13
 
+import scala.annotation.tailrec
 import scala.util.{Failure, Success, Try}
 
 object Day13 {
 
-  val filename = "day13/input.txt"
+  private val filename = "day13/input.txt"
 
-  val input = Try(
+  private val input = Try(
     io.Source.fromResource(filename).getLines.toArray) match {
     case Failure(err) => throw new Exception(err.getMessage)
     case Success(res) => res
   }
 
-  val depart = input.head.toLong
+  private val depart = input.head.toLong
 
-  val unrestrictedBusLines = input(1).split(',')
-  val restrictedBusLines = unrestrictedBusLines.filterNot(_ == "x").map(_.toLong)
+  private val unrestrictedBusLines = input(1).split(',')
+  private val restrictedBusLines = unrestrictedBusLines.filterNot(_ == "x").map(_.toLong)
 
-  val res1 = restrictedBusLines.map(bus => (bus, ((bus * (depart / bus)) + bus) - depart)).minBy(_._2)
+  val res1: (Long, Long) =
+    restrictedBusLines.map(bus => (bus, ((bus * (depart / bus)) + bus) - depart)).minBy(_._2)
 
-  /* (busline: Long, offset: Int) */
-  val busLinesOffsets = unrestrictedBusLines.zipWithIndex.filterNot(_._1 == "x").map(bus => (bus._1.toLong, bus._2.toLong))
+  val busLinesOffsets: Array[(Long, Long)] =
+    unrestrictedBusLines.zipWithIndex.filterNot(_._1 == "x").map(bus => (bus._1.toLong, bus._2.toLong))
 
-  val hint = 100000000000000L
-  val r = busLinesOffsets.map(bo => {
-
-    val (bus, offset) = bo
-    val numDepartsBeforeHint = bus * (hint / bus)
-    val numDepartsAfterHint = numDepartsBeforeHint + bus + offset
-    val minsUntilNextDepart = numDepartsAfterHint - hint
-
-    (bus, minsUntilNextDepart)
-  }) // Array((17,9), (41,11), (37,22), (367,128), (19,39), (23,51), (29,47), (613,51), (13,65))
-
-  val aOffset = 0
-  val bOffset = 1
-  val cOffset = 4
-  val dOffset = 6
-  val eOffset = 7
-
-def solve2(t: Long, a: Int, b: Int, c: Int, d: Int, e: Int): Long = {
-    if (t !=0 && a == 7 && b == bOffset && c == cOffset && d == dOffset && e == eOffset) t
-    else if (t == 166500) t
+  @tailrec
+  def solve2(t: Long, stepLength: Long, idx: Int): Long =
+    if (idx == busLinesOffsets.length) t - stepLength
     else {
-      val nextA = if (a == 1) 17 else a - 1
-      val nextB = if (b == 1) 41 else b - 1
-      val nextC = if (c == 1) 37 else c - 1
-      val nextD = if (d == 1) 367 else d - 1
-      val nextE = if (e == 1) 19 else e - 1
-      solve2(t + 1, nextA, nextB, nextC, nextD, nextE)
-    }
-  }
+      val (busLine, offset) = busLinesOffsets(idx)
 
-  lazy val res2 = solve2(0, 9, 13, 59, 31, 19)
+      if ((t + offset) % busLine != 0L) solve2(t + stepLength, stepLength, idx)
+      else solve2(t + (busLine * stepLength), busLine * stepLength, idx + 1)
+    }
+
+  private val (busLine, _) = busLinesOffsets.head
+  val res2 = solve2(0, busLine, 1)
 
 }
