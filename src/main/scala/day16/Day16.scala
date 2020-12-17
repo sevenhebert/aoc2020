@@ -55,8 +55,8 @@ object Day16 {
     case ((ruleKey, invalidFields), acc) => acc.updated(ruleKey, acc(ruleKey).diff(invalidFields))
   }
 
-  def processOfElimination(choices: Map[String, Array[Int]], chosen: Map[String, Int], prevSize: Int): Map[String, Int] = {
-    if (choices.isEmpty || chosen.size == prevSize) chosen
+  def processOfElimination(choices: Map[String, Array[Int]], chosen: Map[String, Int]): Map[String, Int] = {
+    if (chosen.size == rulesMap.size) chosen
     else {
       val (chose, available) = choices.partition(_._2.length == 1)
       val nextChoices = chose.foldRight(available) {
@@ -66,11 +66,11 @@ object Day16 {
           avaliableUpdate ++ rest
       }
       val nextChosen = chosen ++ chose.map { case (key, value) => key -> value.last }
-      processOfElimination(nextChoices, nextChosen, chosen.size)
+      processOfElimination(nextChoices, nextChosen)
     }
   }
 
-  val fieldIndices = processOfElimination(validFieldByRule, Map.empty, -1)
+  val fieldIndices = processOfElimination(validFieldByRule, Map.empty)
 
   def mapTicketToFields(ticket: Array[Int], fieldsMap: Map[String, Int]) = fieldsMap.foldRight(fieldsMap) {
     case ((key, fieldIdx), result) => result.updated(key, ticket(fieldIdx))
